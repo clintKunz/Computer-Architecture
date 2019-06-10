@@ -56,7 +56,9 @@ void cpu_run(struct cpu *cpu)
     // 1. Get the value of the current instruction (in address PC).
     ir = cpu->ram[pc];
     // 2. Figure out how many operands this next instruction requires
-
+    int ops;
+    if (ir > 00111111) { ops++; };
+    if (ir > 01111111) { ops++; };
     // 3. Get the appropriate value(s) of the operands following this instruction
 
     // 4. switch() over it to decide on a course of action.
@@ -65,10 +67,13 @@ void cpu_run(struct cpu *cpu)
     // 6. Move the PC to the next instruction.
       case LDI:
         printf("LDI\n");
-        pc++;
+        cpu->registers[cpu->ram[pc+1]] = cpu->ram[pc+2]; 
+        pc+3;
       case PRN:
         printf("PRN\n");
-        pc++;
+        int v = cpu->registers[cpu->ram[pc+1]];
+        printf("%d\n", v);
+        pc+2;
       case HLT:
         printf("HLT\n");
         running = 0; 
@@ -86,4 +91,5 @@ void cpu_run(struct cpu *cpu)
 void cpu_init(struct cpu *cpu)
 {
   // TODO: Initialize the PC and other special registers
+ 
 }
