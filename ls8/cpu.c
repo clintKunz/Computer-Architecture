@@ -47,14 +47,36 @@ void cpu_run(struct cpu *cpu)
 {
   int running = 1; // True until we get a HLT instruction
 
+  int pc = 0;
+
+  unsigned char ir;
+
   while (running) {
     // TODO
     // 1. Get the value of the current instruction (in address PC).
+    ir = cpu->ram[pc];
     // 2. Figure out how many operands this next instruction requires
+
     // 3. Get the appropriate value(s) of the operands following this instruction
+
     // 4. switch() over it to decide on a course of action.
+    switch(ir) {
     // 5. Do whatever the instruction should do according to the spec.
     // 6. Move the PC to the next instruction.
+      case LDI:
+        printf("LDI\n");
+        pc++;
+      case PRN:
+        printf("PRN\n");
+        pc++;
+      case HLT:
+        printf("HLT\n");
+        running = 0; 
+      default: 
+        printf("Unknown instruction %02x at address %02x\n", ir, pc);
+        pc++; 
+    }
+ 
   }
 }
 
