@@ -48,7 +48,7 @@ void cpu_load(struct cpu *cpu, char *filename)
       continue;
     }
 
-    printf("%u\n", v); 
+    //printf("%u\n", v); 
     cpu->ram[address] = v;
     address++; 
   }
@@ -78,7 +78,7 @@ void cpu_run(struct cpu *cpu)
   int running = 1; // True until we get a HLT instruction
   unsigned int operA;
   unsigned int operB;
-  cpu->pc = 0;
+  int v, reg;
 
   unsigned char ir;
 
@@ -88,7 +88,7 @@ void cpu_run(struct cpu *cpu)
     ir = cpu->ram[cpu->pc];
     // 2. Figure out how many operands this next instruction requires
     int numOperands = (ir >> 6) + 1;
-    printf("numOper: %d\n", numOperands);
+    //printf("numOper: %d\n", numOperands);
     // 3. Get the appropriate value(s) of the operands following this instruction
     if (numOperands > 1) {
       operA = cpu->ram[cpu->pc+1];
@@ -100,6 +100,22 @@ void cpu_run(struct cpu *cpu)
     switch(ir) {
     // 5. Do whatever the instruction should do according to the spec.
     // 6. Move the PC to the next instruction.
+      case PUSH:
+        printf("PUSH\n");
+        cpu->registers[SP]--;
+        reg = operA; 
+        v = cpu->registers[reg];
+        cpu->ram[cpu->registers[SP]] = v;
+        cpu->pc+=numOperands; 
+        break;
+      case POP:
+        printf("POP\n");
+        reg = operA;
+        v = cpu->ram[cpu->registers[SP]];
+        cpu->registers[reg] = v;
+        cpu->registers[SP]++;
+        cpu->pc+=numOperands;
+        break;
       case MUL: 
         printf("MUL\n");
         cpu->registers[operA] = cpu->registers[operA] * cpu->registers[operB];
@@ -135,5 +151,6 @@ void cpu_run(struct cpu *cpu)
 void cpu_init(struct cpu *cpu)
 {
   // TODO: Initialize the PC and other special registers
- 
+  cpu->pc = 0;
+  cpu->registers[SP] = 248; 
 }
