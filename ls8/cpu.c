@@ -63,7 +63,7 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
 {
   switch (op) {
     case ALU_MUL:
-      // TODO
+      cpu->registers[regA] = cpu->registers[regA] * cpu->registers[regB];
       break;
 
     // TODO: implement more ALU ops
@@ -135,7 +135,8 @@ void cpu_run(struct cpu *cpu)
         break;
       case MUL: 
         printf("MUL\n");
-        cpu->registers[operA] = cpu->registers[operA] * cpu->registers[operB];
+        alu(cpu, ALU_MUL, operA, operB);
+        //cpu->registers[operA] = cpu->registers[operA] * cpu->registers[operB];
         cpu->pc+=numOperands;
         break;
       case LDI:
