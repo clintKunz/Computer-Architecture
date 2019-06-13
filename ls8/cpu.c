@@ -78,7 +78,7 @@ void cpu_run(struct cpu *cpu)
   int running = 1; // True until we get a HLT instruction
   unsigned int operA;
   unsigned int operB;
-  int v, reg;
+  int v, reg, retaddr;
 
   unsigned char ir;
 
@@ -100,6 +100,23 @@ void cpu_run(struct cpu *cpu)
     switch(ir) {
     // 5. Do whatever the instruction should do according to the spec.
     // 6. Move the PC to the next instruction.
+      case CALL:
+        retaddr = cpu->pc + numOperands; 
+        cpu->registers[SP]--;
+        cpu->ram[cpu->registers[SP]] = retaddr; 
+        reg = cpu->ram[cpu->pc + 1];
+        cpu->pc = cpu->registers[reg];
+        break;
+      case RET:
+        retaddr = cpu->ram[cpu->registers[SP]];
+        cpu->registers[SP]++;
+        cpu->pc = retaddr;
+        break;
+      case ADD:
+        printf("ADD\n");
+        cpu->registers[operA] = cpu->registers[operA] + cpu->registers[operB];
+        cpu->pc+=numOperands;
+        break;
       case PUSH:
         printf("PUSH\n");
         cpu->registers[SP]--;
