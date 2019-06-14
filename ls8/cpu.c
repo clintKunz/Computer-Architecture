@@ -77,6 +77,15 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
     case ALU_NOT:
       cpu->registers[regA] = ~cpu->registers[regA];
       break;
+    case ALU_SHL:
+      cpu->registers[regA] = cpu->registers[regA] << cpu->registers[regB];
+      break;
+    case ALU_SHR:
+      cpu->registers[regA] = cpu->registers[regA] >> cpu->registers[regB];
+      break;
+    case ALU_MOD:
+      cpu->registers[regA] = cpu->registers[regA] % cpu->registers[regB];
+      break;
   }
 }
 
