@@ -79,6 +79,9 @@ void cpu_run(struct cpu *cpu)
   unsigned int operA;
   unsigned int operB;
   int v, reg, retaddr;
+  int equal = 0;
+  int lessThan = 0;
+  int greaterThan = 0;
 
   unsigned char ir;
 
@@ -100,6 +103,51 @@ void cpu_run(struct cpu *cpu)
     switch(ir) {
     // 5. Do whatever the instruction should do according to the spec.
     // 6. Move the PC to the next instruction.
+      case JEQ:
+        //printf("JEQ\n");
+        if (equal) {
+          //printf("JumpJEQ\n");
+          reg = cpu->ram[cpu->pc + 1];
+          cpu->pc = cpu->registers[reg];
+        } else {
+          cpu->pc+=numOperands; 
+        }
+        break;
+      case JNE:
+        //printf("JNE\n");
+        if (!equal) {
+          //printf("JumpJNE\n");
+          reg = cpu->ram[cpu->pc + 1];
+          cpu->pc = cpu->registers[reg];
+        } else {
+          cpu->pc+=numOperands; 
+        }
+        break;
+      case JMP:
+        //printf("JMP\n");
+        reg = cpu->ram[cpu->pc + 1];
+        cpu->pc = cpu->registers[reg]; 
+        break;
+      case CMP:
+        //printf("CMP\n");
+        if (cpu->registers[operA] == cpu->registers[operB]) {
+          equal = 1;
+          lessThan = 0;
+          greaterThan = 0;
+          //printf("Equal\n");
+        } else if (cpu->registers[operA] < cpu->registers[operB]) {
+          lessThan = 1;
+          equal = 0;
+          greaterThan = 0;
+          //printf("Less Than\n");
+        } else if (cpu->registers[operA] > cpu->registers[operB]) {
+          greaterThan = 1;
+          lessThan = 0;
+          equal = 0;
+          //printf("Greater Than\n");
+        }
+        cpu->pc+=numOperands; 
+        break;
       case CALL:
         retaddr = cpu->pc + numOperands; 
         cpu->registers[SP]--;
@@ -113,12 +161,12 @@ void cpu_run(struct cpu *cpu)
         cpu->pc = retaddr;
         break;
       case ADD:
-        printf("ADD\n");
+        //printf("ADD\n");
         cpu->registers[operA] = cpu->registers[operA] + cpu->registers[operB];
         cpu->pc+=numOperands;
         break;
       case PUSH:
-        printf("PUSH\n");
+        //printf("PUSH\n");
         cpu->registers[SP]--;
         reg = operA; 
         v = cpu->registers[reg];
@@ -126,7 +174,7 @@ void cpu_run(struct cpu *cpu)
         cpu->pc+=numOperands; 
         break;
       case POP:
-        printf("POP\n");
+        //printf("POP\n");
         reg = operA;
         v = cpu->ram[cpu->registers[SP]];
         cpu->registers[reg] = v;
@@ -134,24 +182,24 @@ void cpu_run(struct cpu *cpu)
         cpu->pc+=numOperands;
         break;
       case MUL: 
-        printf("MUL\n");
+        //printf("MUL\n");
         alu(cpu, ALU_MUL, operA, operB);
         //cpu->registers[operA] = cpu->registers[operA] * cpu->registers[operB];
         cpu->pc+=numOperands;
         break;
       case LDI:
-        printf("LDI\n");
+        //printf("LDI\n");
         cpu->registers[operA] = operB; 
         cpu->pc+=numOperands;
         break;
       case PRN:
-        printf("PRN\n");
-        int v = cpu->registers[operA];
+        //printf("PRN\n");
+        v = cpu->registers[operA];
         printf("%d\n", v);
         cpu->pc+=numOperands;
         break;
       case HLT:
-        printf("HLT\n");
+        //printf("HLT\n");
         running = 0; 
         break; 
       default: 
