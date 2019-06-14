@@ -65,8 +65,18 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
     case ALU_MUL:
       cpu->registers[regA] = cpu->registers[regA] * cpu->registers[regB];
       break;
-
-    // TODO: implement more ALU ops
+    case ALU_AND:
+      cpu->registers[regA] = cpu->registers[regA] & cpu->registers[regB];
+      break;
+    case ALU_OR:
+      cpu->registers[regA] = cpu->registers[regA] | cpu->registers[regB];
+      break;
+    case ALU_XOR:
+      cpu->registers[regA] = cpu->registers[regA] ^ cpu->registers[regB];
+      break;
+    case ALU_NOT:
+      cpu->registers[regA] = ~cpu->registers[regA];
+      break;
   }
 }
 
